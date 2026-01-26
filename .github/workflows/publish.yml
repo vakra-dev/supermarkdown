@@ -147,9 +147,7 @@ jobs:
       - name: Publish
         run: |
           cd crates/supermarkdown-napi
-          npm publish --access public --provenance
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+          npm publish --access public --provenance --ignore-scripts
 
   publish-crates:
     name: Publish to crates.io
