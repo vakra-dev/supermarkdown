@@ -137,10 +137,12 @@ jobs:
       - name: Move artifacts to npm dirs
         run: |
           cd crates/supermarkdown-napi
-          # Move .node files from artifact subdirs to current dir
+          # Copy .node files from artifact subdirs to current dir
           find ../../artifacts -name "*.node" -type f -exec cp {} . \;
           ls -la *.node
-          # Let napi move them to npm/<platform>/ directories
+          # Create npm/<platform>/ directories with package.json files
+          npx napi create-npm-dirs
+          # Move .node files to npm/<platform>/ directories
           npx napi artifacts
 
       - name: List npm directories
