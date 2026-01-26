@@ -141,13 +141,8 @@ jobs:
           find ../../artifacts -name "*.node" -type f -exec cp {} . \;
           ls -la *.node
 
-          # Create npm/<platform>/ directories - must specify each target
-          for target in x86_64-unknown-linux-gnu x86_64-unknown-linux-musl aarch64-unknown-linux-gnu aarch64-unknown-linux-musl x86_64-apple-darwin aarch64-apple-darwin x86_64-pc-windows-msvc aarch64-pc-windows-msvc; do
-            npx napi create-npm-dir -t $target
-          done
-
-          # Move .node files to npm/<platform>/ directories
-          npx napi artifacts
+          # Use napi prepublish to create npm dirs and move artifacts
+          npx napi prepublish -t npm --skip-gh-release
 
       - name: List npm directories
         run: |
