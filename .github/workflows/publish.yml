@@ -128,6 +128,9 @@ jobs:
         run: |
           cd crates/supermarkdown-napi
           npm install
+          # Flatten artifacts from subdirectories
+          find artifacts -name "*.node" -exec mv {} artifacts/ \;
+          ls -la artifacts/
           npm run artifacts
 
       - name: Publish
