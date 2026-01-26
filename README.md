@@ -294,7 +294,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-supermarkdown = "0.0.1"
+supermarkdown = "0.0.2"
 ```
 
 ```rust
