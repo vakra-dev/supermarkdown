@@ -141,13 +141,16 @@ jobs:
           find ../../artifacts -name "*.node" -type f -exec cp {} . \;
           ls -la *.node
 
+          # Debug: show napi config
+          cat package.json | grep -A 20 '"napi"'
+
           # Use napi prepublish to create npm dirs and move artifacts
           npx napi prepublish -t npm --skip-gh-release
 
-      - name: List npm directories
-        run: |
-          cd crates/supermarkdown-napi
-          ls -la npm/*/
+          # Show what was created
+          echo "Contents after napi prepublish:"
+          ls -la
+          ls -la npm/ 2>/dev/null || echo "npm/ directory does not exist"
 
       - name: Publish
         run: |
