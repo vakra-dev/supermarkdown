@@ -99,7 +99,10 @@ impl Rule for TableRule {
             result.push('|');
             for (col_idx, cell) in row.iter().enumerate() {
                 let width = col_widths.get(col_idx).copied().unwrap_or(3);
-                let alignment = col_alignments.get(col_idx).copied().unwrap_or(Alignment::None);
+                let alignment = col_alignments
+                    .get(col_idx)
+                    .copied()
+                    .unwrap_or(Alignment::None);
 
                 // Format cell content with alignment
                 let formatted = match alignment {
@@ -120,10 +123,15 @@ impl Rule for TableRule {
             if row_idx == 0 {
                 result.push('|');
                 for (col_idx, width) in col_widths.iter().enumerate() {
-                    let alignment = col_alignments.get(col_idx).copied().unwrap_or(Alignment::None);
+                    let alignment = col_alignments
+                        .get(col_idx)
+                        .copied()
+                        .unwrap_or(Alignment::None);
                     let separator = match alignment {
                         Alignment::Left => format!(" :{} |", "-".repeat(*width - 1)),
-                        Alignment::Center => format!(" :{}: |", "-".repeat(width.saturating_sub(2))),
+                        Alignment::Center => {
+                            format!(" :{}: |", "-".repeat(width.saturating_sub(2)))
+                        }
                         Alignment::Right => format!(" {}: |", "-".repeat(*width - 1)),
                         Alignment::None => format!(" {} |", "-".repeat(*width)),
                     };

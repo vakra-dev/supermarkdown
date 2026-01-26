@@ -71,10 +71,41 @@ fn detect_language(pre: &ElementRef) -> Option<String> {
 
 /// Known programming language identifiers for bare class fallback.
 static KNOWN_LANGUAGES: &[&str] = &[
-    "bash", "c", "cpp", "csharp", "css", "dart", "diff", "go", "graphql", "html",
-    "java", "javascript", "js", "json", "kotlin", "lua", "makefile", "markdown",
-    "objectivec", "perl", "php", "plaintext", "python", "r", "ruby", "rust",
-    "scala", "shell", "sql", "swift", "typescript", "ts", "xml", "yaml", "yml",
+    "bash",
+    "c",
+    "cpp",
+    "csharp",
+    "css",
+    "dart",
+    "diff",
+    "go",
+    "graphql",
+    "html",
+    "java",
+    "javascript",
+    "js",
+    "json",
+    "kotlin",
+    "lua",
+    "makefile",
+    "markdown",
+    "objectivec",
+    "perl",
+    "php",
+    "plaintext",
+    "python",
+    "r",
+    "ruby",
+    "rust",
+    "scala",
+    "shell",
+    "sql",
+    "swift",
+    "typescript",
+    "ts",
+    "xml",
+    "yaml",
+    "yml",
 ];
 
 /// Extract language from class attribute.
@@ -96,8 +127,10 @@ fn extract_language_from_class(class: &str) -> Option<String> {
         // hljs-{lang} (highlight.js)
         if let Some(lang) = part.strip_prefix("hljs-") {
             // Skip non-language classes like hljs-keyword
-            if !["keyword", "string", "number", "comment", "function", "class", "built_in"]
-                .contains(&lang)
+            if ![
+                "keyword", "string", "number", "comment", "function", "class", "built_in",
+            ]
+            .contains(&lang)
             {
                 return Some(lang.to_string());
             }

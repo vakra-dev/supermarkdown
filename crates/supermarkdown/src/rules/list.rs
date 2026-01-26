@@ -111,19 +111,20 @@ mod tests {
             .next()
             .unwrap();
 
-        let result = ListRule.convert(ul, &metadata, &options, &|e, m, o| {
-            let mut s = String::new();
-            for child in e.children() {
-                if let Some(el) = ElementRef::wrap(child) {
-                    if el.value().name() == "li" {
-                        s.push_str(&ListItemRule.convert(el, m, o, &|e, _, _| {
-                            e.text().collect::<Vec<_>>().join("")
-                        }));
+        let result =
+            ListRule.convert(ul, &metadata, &options, &|e, m, o| {
+                let mut s = String::new();
+                for child in e.children() {
+                    if let Some(el) = ElementRef::wrap(child) {
+                        if el.value().name() == "li" {
+                            s.push_str(&ListItemRule.convert(el, m, o, &|e, _, _| {
+                                e.text().collect::<Vec<_>>().join("")
+                            }));
+                        }
                     }
                 }
-            }
-            s
-        });
+                s
+            });
 
         assert!(result.contains("- First"));
         assert!(result.contains("- Second"));
@@ -142,19 +143,20 @@ mod tests {
             .next()
             .unwrap();
 
-        let result = ListRule.convert(ol, &metadata, &options, &|e, m, o| {
-            let mut s = String::new();
-            for child in e.children() {
-                if let Some(el) = ElementRef::wrap(child) {
-                    if el.value().name() == "li" {
-                        s.push_str(&ListItemRule.convert(el, m, o, &|e, _, _| {
-                            e.text().collect::<Vec<_>>().join("")
-                        }));
+        let result =
+            ListRule.convert(ol, &metadata, &options, &|e, m, o| {
+                let mut s = String::new();
+                for child in e.children() {
+                    if let Some(el) = ElementRef::wrap(child) {
+                        if el.value().name() == "li" {
+                            s.push_str(&ListItemRule.convert(el, m, o, &|e, _, _| {
+                                e.text().collect::<Vec<_>>().join("")
+                            }));
+                        }
                     }
                 }
-            }
-            s
-        });
+                s
+            });
 
         assert!(result.contains("1. One"));
         assert!(result.contains("2. Two"));
@@ -201,19 +203,20 @@ mod tests {
             .next()
             .unwrap();
 
-        let result = ListRule.convert(ol, &metadata, &options, &|e, m, o| {
-            let mut s = String::new();
-            for child in e.children() {
-                if let Some(el) = ElementRef::wrap(child) {
-                    if el.value().name() == "li" {
-                        s.push_str(&ListItemRule.convert(el, m, o, &|e, _, _| {
-                            e.text().collect::<Vec<_>>().join("")
-                        }));
+        let result =
+            ListRule.convert(ol, &metadata, &options, &|e, m, o| {
+                let mut s = String::new();
+                for child in e.children() {
+                    if let Some(el) = ElementRef::wrap(child) {
+                        if el.value().name() == "li" {
+                            s.push_str(&ListItemRule.convert(el, m, o, &|e, _, _| {
+                                e.text().collect::<Vec<_>>().join("")
+                            }));
+                        }
                     }
                 }
-            }
-            s
-        });
+                s
+            });
 
         assert!(result.contains("5. Fifth"));
         assert!(result.contains("6. Sixth"));
@@ -255,19 +258,20 @@ mod tests {
             .next()
             .unwrap();
 
-        let result = ListRule.convert(ul, &metadata, &options, &|e, m, o| {
-            let mut s = String::new();
-            for child in e.children() {
-                if let Some(el) = ElementRef::wrap(child) {
-                    if el.value().name() == "li" {
-                        s.push_str(&ListItemRule.convert(el, m, o, &|e, _, _| {
-                            e.text().collect::<Vec<_>>().join("")
-                        }));
+        let result =
+            ListRule.convert(ul, &metadata, &options, &|e, m, o| {
+                let mut s = String::new();
+                for child in e.children() {
+                    if let Some(el) = ElementRef::wrap(child) {
+                        if el.value().name() == "li" {
+                            s.push_str(&ListItemRule.convert(el, m, o, &|e, _, _| {
+                                e.text().collect::<Vec<_>>().join("")
+                            }));
+                        }
                     }
                 }
-            }
-            s
-        });
+                s
+            });
 
         // Empty list items should be skipped
         assert!(result.contains("- Item 1"));

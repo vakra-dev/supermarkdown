@@ -92,11 +92,10 @@ pub async fn convert_async(html: String, options: Option<ConvertOptions>) -> Res
 
     // Use tokio's spawn_blocking to run the CPU-intensive conversion
     // on a separate thread pool, avoiding blocking the Node.js event loop
-    let result = tokio::task::spawn_blocking(move || {
-        supermarkdown::convert_with_options(&html, &opts)
-    })
-    .await
-    .map_err(|e| Error::from_reason(format!("Conversion failed: {}", e)))?;
+    let result =
+        tokio::task::spawn_blocking(move || supermarkdown::convert_with_options(&html, &opts))
+            .await
+            .map_err(|e| Error::from_reason(format!("Conversion failed: {}", e)))?;
 
     Ok(result)
 }

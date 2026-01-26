@@ -12,9 +12,8 @@ static EXCESSIVE_NEWLINES_RE: Lazy<Regex> = Lazy::new(|| Regex::new(r"\n{3,}").u
 /// Regex for matching inline links (not images).
 /// Matches [text](url) or [text](url "title") but not ![alt](src)
 /// Uses a capture group to detect if preceded by ! (for images)
-static INLINE_LINK_RE: Lazy<Regex> = Lazy::new(|| {
-    Regex::new(r#"(^|[^!])\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)"#).unwrap()
-});
+static INLINE_LINK_RE: Lazy<Regex> =
+    Lazy::new(|| Regex::new(r#"(^|[^!])\[([^\]]+)\]\(([^)\s]+)(?:\s+"([^"]*)")?\)"#).unwrap());
 
 /// Post-process the markdown output.
 pub fn postprocess(markdown: String, options: &Options) -> String {
@@ -178,7 +177,7 @@ mod tests {
         let result = convert_to_referenced_links(input);
         assert!(result.contains("[a][1]"));
         assert!(result.contains("[b][1]")); // Same reference
-        // Should only have one reference
+                                            // Should only have one reference
         assert_eq!(result.matches("[1]:").count(), 1);
     }
 

@@ -153,6 +153,9 @@ mod tests {
     fn test_special_chars() {
         assert_eq!(decode_entities("&mdash;"), "—");
         assert_eq!(decode_entities("&hellip;"), "…");
-        assert_eq!(decode_entities("&ldquo;test&rdquo;"), "\u{201C}test\u{201D}");
+        assert_eq!(
+            decode_entities("&ldquo;test&rdquo;"),
+            "\u{201C}test\u{201D}"
+        );
     }
 }

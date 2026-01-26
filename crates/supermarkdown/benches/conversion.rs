@@ -221,7 +221,8 @@ fn bench_with_options(c: &mut Criterion) {
     // Test with different options
     let setext_options = Options::new().heading_style(supermarkdown::HeadingStyle::Setext);
     let referenced_options = Options::new().link_style(supermarkdown::LinkStyle::Referenced);
-    let exclude_options = Options::new().exclude_selectors(vec!["nav".to_string(), "footer".to_string()]);
+    let exclude_options =
+        Options::new().exclude_selectors(vec!["nav".to_string(), "footer".to_string()]);
 
     group.throughput(Throughput::Bytes(COMPLEX_HTML.len() as u64));
 

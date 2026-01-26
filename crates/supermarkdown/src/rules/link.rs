@@ -169,7 +169,10 @@ mod tests {
             r#"<a href="https://example.com" title="tip">https://example.com</a>"#,
             &Options::default(),
         );
-        assert_eq!(result, r#"[https://example.com](https://example.com "tip")"#);
+        assert_eq!(
+            result,
+            r#"[https://example.com](https://example.com "tip")"#
+        );
     }
 
     #[test]

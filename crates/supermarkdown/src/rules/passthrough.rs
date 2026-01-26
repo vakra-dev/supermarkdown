@@ -1,6 +1,6 @@
 //! Passthrough rule for HTML elements without Markdown equivalents.
 //!
-//! Elements like <kbd>, <mark>, <abbr>, <samp>, <var> are passed through
+//! Elements like `<kbd>`, `<mark>`, `<abbr>`, `<samp>`, `<var>` are passed through
 //! as raw HTML since Markdown supports inline HTML.
 
 use scraper::ElementRef;

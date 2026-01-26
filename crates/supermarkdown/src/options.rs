@@ -19,7 +19,7 @@ pub struct Options {
     /// Default: '`'
     pub code_fence: char,
 
-    /// Link style: Inline [text](url) or Referenced [text][1].
+    /// Link style: Inline `[text](url)` or Referenced `[text][1]`.
     /// Default: Inline
     pub link_style: LinkStyle,
 
@@ -108,10 +108,10 @@ pub enum HeadingStyle {
 /// Link style for markdown output.
 #[derive(Debug, Clone, Copy, Default, PartialEq, Eq)]
 pub enum LinkStyle {
-    /// Inline style: [text](url)
+    /// Inline style: `[text](url)`
     #[default]
     Inline,
-    /// Referenced style: [text][1] ... [1]: url
+    /// Referenced style: `[text][1] ... [1]: url`
     Referenced,
 }
 

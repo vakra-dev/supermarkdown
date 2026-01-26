@@ -101,7 +101,11 @@ impl Converter {
                 }
                 scraper::Node::Element(_) => {
                     if let Some(child_element) = ElementRef::wrap(child) {
-                        result.push_str(&self.convert_node_internal(child_element, metadata, options));
+                        result.push_str(&self.convert_node_internal(
+                            child_element,
+                            metadata,
+                            options,
+                        ));
                     }
                 }
                 _ => {}
