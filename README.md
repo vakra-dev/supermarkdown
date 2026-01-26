@@ -1,6 +1,6 @@
 # supermarkdown
 
-[![npm version](https://img.shields.io/npm/v/supermarkdown.svg)](https://www.npmjs.com/package/supermarkdown)
+[![npm version](https://img.shields.io/npm/v/@vakra-dev/supermarkdown.svg)](https://www.npmjs.com/package/@vakra-dev/supermarkdown)
 [![crates.io](https://img.shields.io/crates/v/supermarkdown.svg)](https://crates.io/crates/supermarkdown)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 
@@ -20,13 +20,13 @@ High-performance HTML to Markdown converter with full GitHub Flavored Markdown s
 ## Installation
 
 ```bash
-npm install supermarkdown
+npm install @vakra-dev/supermarkdown
 ```
 
 ## Quick Start
 
 ```javascript
-import { convert } from "supermarkdown";
+import { convert } from "@vakra-dev/supermarkdown";
 
 const html = `
   <h1>Hello World</h1>
@@ -45,7 +45,7 @@ console.log(markdown);
 ### Basic Conversion
 
 ```javascript
-import { convert } from "supermarkdown";
+import { convert } from "@vakra-dev/supermarkdown";
 
 const markdown = convert("<h1>Title</h1><p>Paragraph</p>");
 ```
@@ -53,7 +53,7 @@ const markdown = convert("<h1>Title</h1><p>Paragraph</p>");
 ### With Options
 
 ```javascript
-import { convert } from "supermarkdown";
+import { convert } from "@vakra-dev/supermarkdown";
 
 const markdown = convert(html, {
   headingStyle: "setext", // 'atx' (default) or 'setext'
@@ -68,7 +68,7 @@ const markdown = convert(html, {
 For large documents, use `convertAsync` to avoid blocking the main thread:
 
 ```javascript
-import { convertAsync } from "supermarkdown";
+import { convertAsync } from "@vakra-dev/supermarkdown";
 
 const markdown = await convertAsync(largeHtml);
 

@@ -1,5 +1,5 @@
 {
-  "name": "supermarkdown",
+  "name": "@vakra-dev/supermarkdown",
   "version": "0.0.1",
   "description": "High-performance HTML to Markdown converter with full GFM support",
   "main": "index.js",
@@ -61,13 +61,13 @@
     "timeout": "3m"
   },
   "optionalDependencies": {
-    "supermarkdown-win32-x64-msvc": "0.0.1",
-    "supermarkdown-darwin-x64": "0.0.1",
-    "supermarkdown-darwin-arm64": "0.0.1",
-    "supermarkdown-linux-x64-gnu": "0.0.1",
-    "supermarkdown-linux-x64-musl": "0.0.1",
-    "supermarkdown-linux-arm64-gnu": "0.0.1",
-    "supermarkdown-linux-arm64-musl": "0.0.1",
-    "supermarkdown-win32-arm64-msvc": "0.0.1"
+    "@vakra-dev/supermarkdown-win32-x64-msvc": "0.0.1",
+    "@vakra-dev/supermarkdown-darwin-x64": "0.0.1",
+    "@vakra-dev/supermarkdown-linux-x64-gnu": "0.0.1",
+    "@vakra-dev/supermarkdown-linux-x64-musl": "0.0.1",
+    "@vakra-dev/supermarkdown-linux-arm64-gnu": "0.0.1",
+    "@vakra-dev/supermarkdown-linux-arm64-musl": "0.0.1",
+    "@vakra-dev/supermarkdown-darwin-arm64": "0.0.1",
+    "@vakra-dev/supermarkdown-win32-arm64-msvc": "0.0.1"
   }
 }
