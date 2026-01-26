@@ -131,7 +131,7 @@ jobs:
           # Flatten artifacts from subdirectories
           find artifacts -name "*.node" -exec mv {} artifacts/ \;
           ls -la artifacts/
-          npm run artifacts
+          npm run artifacts -- --dir artifacts
 
       - name: Publish
         run: |
