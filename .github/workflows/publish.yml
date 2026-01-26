@@ -122,18 +122,31 @@ jobs:
       - name: Download all artifacts
         uses: actions/download-artifact@v4
         with:
-          path: crates/supermarkdown-napi/artifacts
+          path: artifacts
 
-      - name: Move artifacts
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          find artifacts -name "*.node" -type f
+
+      - name: Install dependencies
         run: |
           cd crates/supermarkdown-napi
           npm install
-          # Flatten artifacts from subdirectories
-          find artifacts -name "*.node" -exec mv {} artifacts/ \;
-          ls -la artifacts/
-          # Create npm directory structure for platform packages
-          npx napi create-npm-dir -t x86_64-pc-windows-msvc -t x86_64-apple-darwin -t x86_64-unknown-linux-gnu -t x86_64-unknown-linux-musl -t aarch64-unknown-linux-gnu -t aarch64-unknown-linux-musl -t aarch64-apple-darwin -t aarch64-pc-windows-msvc
-          npm run artifacts -- --dir artifacts
+
+      - name: Move artifacts to npm dirs
+        run: |
+          cd crates/supermarkdown-napi
+          # Move .node files from artifact subdirs to current dir
+          find ../../artifacts -name "*.node" -type f -exec cp {} . \;
+          ls -la *.node
+          # Let napi move them to npm/<platform>/ directories
+          npx napi artifacts
+
+      - name: List npm directories
+        run: |
+          cd crates/supermarkdown-napi
+          ls -la npm/*/
 
       - name: Publish
         run: |
