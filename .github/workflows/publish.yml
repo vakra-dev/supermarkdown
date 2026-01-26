@@ -131,6 +131,8 @@ jobs:
           # Flatten artifacts from subdirectories
           find artifacts -name "*.node" -exec mv {} artifacts/ \;
           ls -la artifacts/
+          # Create npm directory structure for platform packages
+          npx napi create-npm-dirs
           npm run artifacts -- --dir artifacts
 
       - name: Publish
