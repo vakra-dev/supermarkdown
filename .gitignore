@@ -1,0 +1,43 @@
+# Generated files
+/target/
+**/*.rs.bk
+Cargo.lock
+
+# IDE
+.idea/
+.vscode/
+.claude/
+*.swp
+*.swo
+*~
+
+# macOS
+.DS_Store
+
+# Node.js
+node_modules/
+*.node
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# NAPI-RS
+crates/supermarkdown-napi/*.node
+crates/supermarkdown-napi/artifacts/
+
+# Build outputs
+*.so
+*.dylib
+*.dll
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Test coverage
+coverage/
+*.lcov
+
+# Benchmark results
+criterion/

@@ -1,0 +1,33 @@
+[package]
+name = "supermarkdown"
+description = "High-performance HTML to Markdown conversion for LLMs"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+keywords = ["html", "markdown", "converter", "llm", "parser"]
+categories = ["parsing", "text-processing", "web-programming"]
+
+[dependencies]
+scraper.workspace = true
+html5ever.workspace = true
+ego-tree.workspace = true
+rustc-hash.workspace = true
+regex.workspace = true
+once_cell.workspace = true
+smallvec.workspace = true
+memchr.workspace = true
+log = { workspace = true, optional = true }
+
+[features]
+default = []
+logging = ["log"]
+
+[dev-dependencies]
+criterion.workspace = true
+pretty_assertions.workspace = true
+
+[[bench]]
+name = "conversion"
+harness = false

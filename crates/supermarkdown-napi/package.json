@@ -1,0 +1,73 @@
+{
+  "name": "supermarkdown",
+  "version": "0.0.1",
+  "description": "High-performance HTML to Markdown converter with full GFM support",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/vakra-dev/supermarkdown"
+  },
+  "homepage": "https://github.com/vakra-dev/supermarkdown#readme",
+  "bugs": {
+    "url": "https://github.com/vakra-dev/supermarkdown/issues"
+  },
+  "license": "MIT",
+  "keywords": [
+    "html",
+    "markdown",
+    "converter",
+    "turndown",
+    "html-to-markdown",
+    "gfm",
+    "napi-rs",
+    "rust"
+  ],
+  "files": [
+    "index.js",
+    "index.d.ts",
+    "*.node"
+  ],
+  "napi": {
+    "name": "supermarkdown",
+    "triples": {
+      "defaults": true,
+      "additional": [
+        "x86_64-unknown-linux-musl",
+        "aarch64-unknown-linux-gnu",
+        "aarch64-unknown-linux-musl",
+        "aarch64-apple-darwin",
+        "aarch64-pc-windows-msvc"
+      ]
+    }
+  },
+  "engines": {
+    "node": ">= 14"
+  },
+  "scripts": {
+    "artifacts": "napi artifacts",
+    "build": "napi build --platform --release",
+    "build:debug": "napi build --platform",
+    "prepublishOnly": "napi prepublish -t npm",
+    "test": "ava",
+    "universal": "napi universal",
+    "version": "napi version"
+  },
+  "devDependencies": {
+    "@napi-rs/cli": "^2.18.0",
+    "ava": "^6.0.0"
+  },
+  "ava": {
+    "timeout": "3m"
+  },
+  "optionalDependencies": {
+    "supermarkdown-win32-x64-msvc": "0.0.1",
+    "supermarkdown-darwin-x64": "0.0.1",
+    "supermarkdown-darwin-arm64": "0.0.1",
+    "supermarkdown-linux-x64-gnu": "0.0.1",
+    "supermarkdown-linux-x64-musl": "0.0.1",
+    "supermarkdown-linux-arm64-gnu": "0.0.1",
+    "supermarkdown-linux-arm64-musl": "0.0.1",
+    "supermarkdown-win32-arm64-msvc": "0.0.1"
+  }
+}
