@@ -141,7 +141,7 @@ jobs:
           find ../../artifacts -name "*.node" -type f -exec cp {} . \;
           ls -la *.node
           # Create npm/<platform>/ directories with package.json files
-          npx napi create-npm-dirs
+          npx napi create-npm-dir
           # Move .node files to npm/<platform>/ directories
           npx napi artifacts
 
