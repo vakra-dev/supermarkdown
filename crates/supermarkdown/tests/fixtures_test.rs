@@ -3,9 +3,10 @@
 //! These tests verify that supermarkdown handles various real-world HTML
 //! documents correctly, including edge cases and malformed input.
 
-use supermarkdown::{convert, convert_with_options, Options};
 use std::fs;
 use std::path::PathBuf;
+
+use supermarkdown::{convert, convert_with_options, Options};
 
 fn fixtures_dir() -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))

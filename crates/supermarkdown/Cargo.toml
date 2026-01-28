@@ -13,6 +13,7 @@ categories = ["parsing", "text-processing", "web-programming"]
 [[bin]]
 name = "supermarkdown"
 path = "src/bin/supermarkdown.rs"
+required-features = ["cli"]
 
 [dependencies]
 scraper.workspace = true
@@ -26,7 +27,8 @@ memchr.workspace = true
 log = { workspace = true, optional = true }
 
 [features]
-default = []
+default = ["cli"]
+cli = []
 logging = ["log"]
 
 [dev-dependencies]

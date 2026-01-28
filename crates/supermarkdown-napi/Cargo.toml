@@ -11,7 +11,7 @@ authors.workspace = true
 crate-type = ["cdylib"]
 
 [dependencies]
-supermarkdown = { path = "../supermarkdown" }
+supermarkdown = { path = "../supermarkdown", default-features = false }
 napi.workspace = true
 napi-derive.workspace = true
 tokio.workspace = true
