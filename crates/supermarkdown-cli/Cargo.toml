@@ -12,4 +12,4 @@ name = "supermarkdown"
 path = "src/main.rs"
 
 [dependencies]
-supermarkdown = { path = "../supermarkdown", default-features = false }
+supermarkdown = { version = "0.0.4", path = "../supermarkdown", default-features = false }
