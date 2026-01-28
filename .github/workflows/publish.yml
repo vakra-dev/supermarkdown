@@ -153,6 +153,8 @@ jobs:
   publish-crates:
     name: Publish to crates.io
     runs-on: ubuntu-latest
+    env:
+      CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -160,10 +162,12 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
 
       - name: Publish supermarkdown
-        run: cargo publish -p supermarkdown --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish -p supermarkdown || echo "Already published or failed"
+        continue-on-error: true
 
       - name: Wait for crates.io to index
         run: sleep 30
 
       - name: Publish supermarkdown-cli
-        run: cargo publish -p supermarkdown-cli --token ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: cargo publish -p supermarkdown-cli || echo "Already published or failed"
+        continue-on-error: true
