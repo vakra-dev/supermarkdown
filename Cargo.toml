@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/supermarkdown", "crates/supermarkdown-cli", "crates/supermarkdown-napi"]
+members = ["crates/supermarkdown", "crates/supermarkdown-cli", "crates/supermarkdown-napi", "crates/supermarkdown-wasm"]
 
 [workspace.package]
 version = "0.0.4"
@@ -34,3 +34,9 @@ napi = { version = "2", features = ["async"] }
 napi-derive = "2"
 napi-build = "2"
 tokio = { version = "1", features = ["rt-multi-thread"] }
+
+# WASM bindings
+wasm-bindgen = "0.2"
+serde = { version = "1.0", features = ["derive"] }
+serde-wasm-bindgen = "0.6"
+wasm-bindgen-test = "0.3"

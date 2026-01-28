@@ -1,0 +1,21 @@
+[package]
+name = "supermarkdown-wasm"
+description = "WebAssembly bindings for supermarkdown"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[dependencies]
+supermarkdown = { version = "0.0.4", path = "../supermarkdown", default-features = false }
+wasm-bindgen.workspace = true
+serde.workspace = true
+serde-wasm-bindgen.workspace = true
+getrandom = { version = "0.3", features = ["wasm_js"] }
+
+[dev-dependencies]
+wasm-bindgen-test.workspace = true

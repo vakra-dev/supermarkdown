@@ -171,3 +171,39 @@ jobs:
       - name: Publish supermarkdown-cli
         run: cargo publish -p supermarkdown-cli || echo "Already published or failed"
         continue-on-error: true
+
+  publish-wasm:
+    name: Publish WASM to npm
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          registry-url: https://registry.npmjs.org
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: wasm32-unknown-unknown
+
+      - name: Install wasm-pack
+        run: cargo install wasm-pack
+
+      - name: Build WASM
+        run: |
+          cd crates/supermarkdown-wasm
+          wasm-pack build --target web --scope vakra-dev
+
+      - name: Add README to package
+        run: cp README.md crates/supermarkdown-wasm/pkg/
+
+      - name: Publish WASM to npm
+        run: |
+          cd crates/supermarkdown-wasm/pkg
+          npm publish --access public || echo "Already published or failed"
+        continue-on-error: true
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}

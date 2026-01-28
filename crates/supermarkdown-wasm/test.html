@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>supermarkdown WASM Test</title>
+  <style>
+    body { font-family: system-ui; max-width: 1200px; margin: 0 auto; padding: 20px; }
+    .container { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+    textarea { width: 100%; height: 300px; font-family: monospace; padding: 10px; }
+    button { padding: 10px 20px; font-size: 16px; cursor: pointer; }
+    pre { background: #f5f5f5; padding: 15px; overflow: auto; }
+    h1 { color: #333; }
+    label { font-weight: bold; display: block; margin-bottom: 5px; }
+  </style>
+</head>
+<body>
+  <h1>supermarkdown WASM Test</h1>
+
+  <div class="container">
+    <div>
+      <label>HTML Input:</label>
+      <textarea id="html-input"><h1>Hello World</h1>
+<p>This is a <strong>test</strong> with a <a href="https://example.com">link</a>.</p>
+
+<h2>Features</h2>
+<ul>
+  <li>Item 1</li>
+  <li>Item 2</li>
+  <li>Item 3</li>
+</ul>
+
+<pre><code class="language-javascript">console.log("Hello!");</code></pre>
+
+<table>
+  <tr><th>Name</th><th>Value</th></tr>
+  <tr><td>Foo</td><td>123</td></tr>
+  <tr><td>Bar</td><td>456</td></tr>
+</table></textarea>
+    </div>
+    <div>
+      <label>Markdown Output:</label>
+      <textarea id="md-output" readonly></textarea>
+    </div>
+  </div>
+
+  <p>
+    <button id="convert-btn" disabled>Convert</button>
+    <span id="status">Loading WASM...</span>
+  </p>
+
+  <h3>Options</h3>
+  <p>
+    <label><input type="checkbox" id="setext"> Setext headings</label>
+    <label><input type="checkbox" id="referenced"> Referenced links</label>
+  </p>
+
+  <script type="module">
+    import init, { convert, convertWithOptions } from './pkg/supermarkdown_wasm.js';
+
+    const htmlInput = document.getElementById('html-input');
+    const mdOutput = document.getElementById('md-output');
+    const convertBtn = document.getElementById('convert-btn');
+    const status = document.getElementById('status');
+    const setextCheckbox = document.getElementById('setext');
+    const referencedCheckbox = document.getElementById('referenced');
+
+    async function run() {
+      await init();
+      status.textContent = 'WASM loaded!';
+      convertBtn.disabled = false;
+
+      // Initial conversion
+      doConvert();
+    }
+
+    function doConvert() {
+      const html = htmlInput.value;
+      const options = {};
+
+      if (setextCheckbox.checked) {
+        options.headingStyle = 'setext';
+      }
+      if (referencedCheckbox.checked) {
+        options.linkStyle = 'referenced';
+      }
+
+      try {
+        const start = performance.now();
+        const md = Object.keys(options).length > 0
+          ? convertWithOptions(html, options)
+          : convert(html);
+        const elapsed = (performance.now() - start).toFixed(2);
+
+        mdOutput.value = md;
+        status.textContent = `Converted in ${elapsed}ms`;
+      } catch (e) {
+        mdOutput.value = 'Error: ' + e.message;
+        status.textContent = 'Error!';
+      }
+    }
+
+    convertBtn.addEventListener('click', doConvert);
+    htmlInput.addEventListener('input', doConvert);
+    setextCheckbox.addEventListener('change', doConvert);
+    referencedCheckbox.addEventListener('change', doConvert);
+
+    run();
+  </script>
+</body>
+</html>
