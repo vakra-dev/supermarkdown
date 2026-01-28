@@ -3,7 +3,7 @@ resolver = "2"
 members = ["crates/supermarkdown", "crates/supermarkdown-cli", "crates/supermarkdown-napi", "crates/supermarkdown-wasm"]
 
 [workspace.package]
-version = "0.0.4"
+version = "0.0.5"
 edition = "2021"
 license = "MIT"
 repository = "https://github.com/vakra-dev/supermarkdown"
