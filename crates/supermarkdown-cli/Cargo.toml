@@ -1,0 +1,15 @@
+[package]
+name = "supermarkdown-cli"
+description = "CLI for supermarkdown HTML to Markdown conversion"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+repository.workspace = true
+authors.workspace = true
+
+[[bin]]
+name = "supermarkdown"
+path = "src/main.rs"
+
+[dependencies]
+supermarkdown = { path = "../supermarkdown", default-features = false }

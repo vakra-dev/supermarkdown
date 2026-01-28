@@ -1,6 +1,6 @@
 [workspace]
 resolver = "2"
-members = ["crates/supermarkdown", "crates/supermarkdown-napi"]
+members = ["crates/supermarkdown", "crates/supermarkdown-cli", "crates/supermarkdown-napi"]
 
 [workspace.package]
 version = "0.0.4"

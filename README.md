@@ -36,7 +36,7 @@ cargo add supermarkdown
 Install the CLI binary via cargo:
 
 ```bash
-cargo install supermarkdown
+cargo install supermarkdown-cli
 ```
 
 ## Command Line Usage

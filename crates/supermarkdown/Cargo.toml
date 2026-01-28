@@ -10,11 +10,6 @@ readme = "../../README.md"
 keywords = ["html", "markdown", "converter", "llm", "parser"]
 categories = ["parsing", "text-processing", "web-programming"]
 
-[[bin]]
-name = "supermarkdown"
-path = "src/bin/supermarkdown.rs"
-required-features = ["cli"]
-
 [dependencies]
 scraper.workspace = true
 html5ever.workspace = true
@@ -27,8 +22,7 @@ memchr.workspace = true
 log = { workspace = true, optional = true }
 
 [features]
-default = ["cli"]
-cli = []
+default = []
 logging = ["log"]
 
 [dev-dependencies]
