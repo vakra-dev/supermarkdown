@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>API Reference - supermarkdown</title>
+</head>
+<body>
+    <nav class="docs-nav">
+        <a href="/">Home</a>
+        <a href="/docs">Docs</a>
+        <a href="/api">API</a>
+    </nav>
+
+    <main class="docs-content">
+        <h1>API Reference</h1>
+
+        <p>This document describes the public API of supermarkdown.</p>
+
+        <h2>Functions</h2>
+
+        <h3><code>convert(html, options?)</code></h3>
+
+        <p>Converts HTML to Markdown synchronously.</p>
+
+        <h4>Parameters</h4>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>Name</th>
+                    <th>Type</th>
+                    <th>Required</th>
+                    <th>Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><code>html</code></td>
+                    <td><code>string</code></td>
+                    <td>Yes</td>
+                    <td>The HTML string to convert</td>
+                </tr>
+                <tr>
+                    <td><code>options</code></td>
+                    <td><code>ConvertOptions</code></td>
+                    <td>No</td>
+                    <td>Conversion options</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h4>Returns</h4>
+
+        <p><code>string</code> - The converted Markdown</p>
+
+        <h4>Example</h4>
+
+        <pre><code class="language-javascript">import { convert } from '@vakra-dev/supermarkdown';
+
+const markdown = convert('&lt;h1&gt;Hello&lt;/h1&gt;');
+console.log(markdown); // # Hello</code></pre>
+
+        <h3><code>convertAsync(html, options?)</code></h3>
+
+        <p>Converts HTML to Markdown asynchronously. Use this for large documents to avoid blocking the main thread.</p>
+
+        <h4>Parameters</h4>
+
+        <p>Same as <code>convert()</code>.</p>
+
+        <h4>Returns</h4>
+
+        <p><code>Promise&lt;string&gt;</code> - A promise that resolves to the converted Markdown</p>
+
+        <h2>Types</h2>
+
+        <h3><code>ConvertOptions</code></h3>
+
+        <dl>
+            <dt><code>headingStyle</code></dt>
+            <dd><code>'atx' | 'setext'</code> - Style for headings. Default: <code>'atx'</code></dd>
+
+            <dt><code>linkStyle</code></dt>
+            <dd><code>'inline' | 'referenced'</code> - Style for links. Default: <code>'inline'</code></dd>
+
+            <dt><code>codeFence</code></dt>
+            <dd><code>'`' | '~'</code> - Character for code fences. Default: <code>'`'</code></dd>
+
+            <dt><code>bulletMarker</code></dt>
+            <dd><code>'-' | '*' | '+'</code> - Character for list bullets. Default: <code>'-'</code></dd>
+
+            <dt><code>baseUrl</code></dt>
+            <dd><code>string</code> - Base URL for resolving relative links</dd>
+
+            <dt><code>excludeSelectors</code></dt>
+            <dd><code>string[]</code> - CSS selectors for elements to exclude</dd>
+
+            <dt><code>includeSelectors</code></dt>
+            <dd><code>string[]</code> - CSS selectors to force include (overrides excludes)</dd>
+        </dl>
+
+        <h2>Supported Elements</h2>
+
+        <details>
+            <summary>Block Elements</summary>
+            <ul>
+                <li>Headings (<code>&lt;h1&gt;</code> - <code>&lt;h6&gt;</code>)</li>
+                <li>Paragraphs (<code>&lt;p&gt;</code>)</li>
+                <li>Lists (<code>&lt;ul&gt;</code>, <code>&lt;ol&gt;</code>)</li>
+                <li>Code blocks (<code>&lt;pre&gt;&lt;code&gt;</code>)</li>
+                <li>Blockquotes (<code>&lt;blockquote&gt;</code>)</li>
+                <li>Tables (<code>&lt;table&gt;</code>)</li>
+            </ul>
+        </details>
+
+        <details>
+            <summary>Inline Elements</summary>
+            <ul>
+                <li>Links (<code>&lt;a&gt;</code>)</li>
+                <li>Images (<code>&lt;img&gt;</code>)</li>
+                <li>Bold (<code>&lt;strong&gt;</code>, <code>&lt;b&gt;</code>)</li>
+                <li>Italic (<code>&lt;em&gt;</code>, <code>&lt;i&gt;</code>)</li>
+                <li>Code (<code>&lt;code&gt;</code>)</li>
+                <li>Strikethrough (<code>&lt;del&gt;</code>, <code>&lt;s&gt;</code>)</li>
+            </ul>
+        </details>
+    </main>
+
+    <footer>
+        <p>supermarkdown documentation</p>
+    </footer>
+</body>
+</html>

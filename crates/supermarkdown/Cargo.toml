@@ -10,6 +10,10 @@ readme = "../../README.md"
 keywords = ["html", "markdown", "converter", "llm", "parser"]
 categories = ["parsing", "text-processing", "web-programming"]
 
+[[bin]]
+name = "supermarkdown"
+path = "src/bin/supermarkdown.rs"
+
 [dependencies]
 scraper.workspace = true
 html5ever.workspace = true

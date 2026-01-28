@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Malformed HTML Test</title>
+</head>
+<body>
+    <!-- Unclosed tags -->
+    <h1>Welcome to My Site
+    <p>This paragraph is never closed
+
+    <!-- Self-closing used on non-void elements -->
+    <div/>Content after self-closing div
+
+    <!-- Nested paragraphs (invalid) -->
+    <p>Outer paragraph <p>Inner paragraph</p> more outer</p>
+
+    <!-- Missing closing tags for list -->
+    <ul>
+        <li>First item
+        <li>Second item
+        <li>Third item
+    </ul>
+
+    <!-- Attributes without quotes -->
+    <a href=https://example.com class=link>Unquoted attributes</a>
+
+    <!-- Wrong nesting -->
+    <strong><em>Bold and italic</strong></em>
+
+    <!-- Deeply nested with missing closes -->
+    <div>
+        <div>
+            <div>
+                <p>Very deeply nested content
+            </div>
+        </div>
+
+    <!-- Entity edge cases -->
+    <p>Less than: < Greater than: > Ampersand: &</p>
+    <p>Already escaped: &lt; &gt; &amp;</p>
+    <p>Numeric entities: &#60; &#62; &#38;</p>
+    <p>Named entities: &copy; &reg; &trade;</p>
+
+    <!-- Empty and whitespace-only elements -->
+    <p></p>
+    <p>   </p>
+    <p>
+
+    </p>
+    <div>
+        <span></span>
+        <strong></strong>
+    </div>
+
+    <!-- Mixed up table -->
+    <table>
+        <tr>
+            <th>Header 1
+            <th>Header 2
+        <tr>
+            <td>Value 1
+            <td>Value 2
+        <tbody>
+            <tr>
+                <td>More values
+                <td>And more
+    </table>
+
+    <!-- Script and style that should be ignored -->
+    <script>
+        // This should be stripped
+        alert("XSS attempt");
+    </script>
+
+    <style>
+        /* This should also be stripped */
+        body { background: red; }
+    </style>
+
+    <!-- Comments -->
+    <!-- This is a comment that should be ignored -->
+    <p>Content after comment</p>
+
+    <!-- Broken image (missing closing bracket) -->
+    <img src="broken.jpg" alt="A broken image">
+
+    <!-- Actually valid content at the end -->
+    <h2>Valid Content</h2>
+    <p>This is properly formatted HTML at the end of the document.</p>
+    <ul>
+        <li>Item one</li>
+        <li>Item two</li>
+        <li>Item three</li>
+    </ul>
+</body>
+</html>

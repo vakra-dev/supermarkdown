@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Getting Started with Rust - A Beginner's Guide</title>
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/blog">Blog</a></li>
+            <li><a href="/about">About</a></li>
+        </ul>
+    </nav>
+
+    <article class="post-content">
+        <header>
+            <h1>Getting Started with Rust - A Beginner's Guide</h1>
+            <p class="meta">Published on January 15, 2024 by <a href="/authors/jane">Jane Developer</a></p>
+        </header>
+
+        <p>Rust is a systems programming language that runs blazingly fast, prevents segfaults, and guarantees thread safety. In this guide, we'll walk through the basics of getting started with Rust.</p>
+
+        <h2>Why Rust?</h2>
+
+        <p>There are several reasons why Rust has become so popular:</p>
+
+        <ul>
+            <li><strong>Memory Safety</strong> - No null pointers, no dangling pointers, no buffer overflows</li>
+            <li><strong>Zero-cost abstractions</strong> - High-level features without runtime overhead</li>
+            <li><strong>Fearless concurrency</strong> - Write parallel code without data races</li>
+        </ul>
+
+        <h2>Installation</h2>
+
+        <p>The easiest way to install Rust is through <code>rustup</code>:</p>
+
+        <pre><code class="language-bash">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</code></pre>
+
+        <p>After installation, verify it works:</p>
+
+        <pre><code class="language-bash">rustc --version
+cargo --version</code></pre>
+
+        <h2>Your First Program</h2>
+
+        <p>Let's write the classic "Hello, World!" program:</p>
+
+        <pre><code class="language-rust">fn main() {
+    println!("Hello, World!");
+}</code></pre>
+
+        <p>Save this as <code>main.rs</code> and compile it:</p>
+
+        <pre><code class="language-bash">rustc main.rs
+./main</code></pre>
+
+        <h2>Using Cargo</h2>
+
+        <p>For real projects, you'll want to use Cargo, Rust's package manager:</p>
+
+        <pre><code class="language-bash">cargo new my_project
+cd my_project
+cargo run</code></pre>
+
+        <blockquote>
+            <p><strong>Tip:</strong> Cargo handles dependencies, building, testing, and more. Always use Cargo for anything beyond simple examples.</p>
+        </blockquote>
+
+        <h2>Conclusion</h2>
+
+        <p>Rust has a steep learning curve, but the payoff is worth it. You get the performance of C/C++ with the safety guarantees of higher-level languages.</p>
+
+        <p>Check out the <a href="https://doc.rust-lang.org/book/">official Rust Book</a> for more comprehensive learning.</p>
+    </article>
+
+    <aside class="sidebar">
+        <h3>Related Posts</h3>
+        <ul>
+            <li><a href="/rust-ownership">Understanding Rust Ownership</a></li>
+            <li><a href="/rust-lifetimes">Lifetimes in Rust</a></li>
+        </ul>
+    </aside>
+
+    <footer>
+        <p>&copy; 2026 Developer Blog. All rights reserved.</p>
+    </footer>
+</body>
+</html>

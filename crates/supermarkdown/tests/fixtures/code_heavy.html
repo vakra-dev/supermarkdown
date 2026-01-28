@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Getting Started with Rust</title>
+</head>
+<body>
+    <article>
+        <h1>Getting Started with Rust</h1>
+
+        <p>This guide will help you write your first Rust program.</p>
+
+        <h2>Installation</h2>
+
+        <p>Install Rust using rustup:</p>
+
+        <pre><code class="language-bash">curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh</code></pre>
+
+        <p>Verify the installation:</p>
+
+        <pre><code class="language-bash">rustc --version
+cargo --version</code></pre>
+
+        <h2>Hello World</h2>
+
+        <p>Create a new file called <code>main.rs</code>:</p>
+
+        <pre><code class="language-rust">fn main() {
+    println!("Hello, world!");
+}</code></pre>
+
+        <p>Compile and run:</p>
+
+        <pre><code class="language-bash">rustc main.rs
+./main</code></pre>
+
+        <h2>Using Cargo</h2>
+
+        <p>Create a new project with <code>cargo new</code>:</p>
+
+        <pre><code class="language-bash">cargo new hello_cargo
+cd hello_cargo</code></pre>
+
+        <p>This creates the following structure:</p>
+
+        <pre><code>hello_cargo/
+├── Cargo.toml
+└── src/
+    └── main.rs</code></pre>
+
+        <p>The <code>Cargo.toml</code> contains project metadata:</p>
+
+        <pre><code class="language-toml">[package]
+name = "hello_cargo"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]</code></pre>
+
+        <h2>Variables and Types</h2>
+
+        <p>Rust has strong static typing:</p>
+
+        <pre><code class="language-rust">fn main() {
+    // Immutable by default
+    let x = 5;
+
+    // Mutable variables need `mut`
+    let mut y = 10;
+    y = 20;
+
+    // Type annotations
+    let z: i32 = 30;
+
+    // Strings
+    let s1 = "hello"; // &amp;str
+    let s2 = String::from("world"); // String
+
+    // Arrays and vectors
+    let arr: [i32; 3] = [1, 2, 3];
+    let vec: Vec&lt;i32&gt; = vec![1, 2, 3];
+}</code></pre>
+
+        <h2>Functions</h2>
+
+        <p>Functions use the <code>fn</code> keyword:</p>
+
+        <pre><code class="language-rust">fn add(a: i32, b: i32) -&gt; i32 {
+    a + b // No semicolon = return value
+}
+
+fn greet(name: &amp;str) {
+    println!("Hello, {}!", name);
+}
+
+fn main() {
+    let result = add(5, 3);
+    println!("5 + 3 = {}", result);
+
+    greet("Rust");
+}</code></pre>
+
+        <h2>Error Handling</h2>
+
+        <p>Rust uses <code>Result</code> and <code>Option</code> for error handling:</p>
+
+        <pre><code class="language-rust">use std::fs::File;
+use std::io::{self, Read};
+
+fn read_file(path: &amp;str) -&gt; Result&lt;String, io::Error&gt; {
+    let mut file = File::open(path)?;
+    let mut contents = String::new();
+    file.read_to_string(&amp;mut contents)?;
+    Ok(contents)
+}
+
+fn main() {
+    match read_file("hello.txt") {
+        Ok(contents) =&gt; println!("{}", contents),
+        Err(e) =&gt; eprintln!("Error: {}", e),
+    }
+}</code></pre>
+
+        <h2>Inline Code Examples</h2>
+
+        <p>Use <code>println!</code> to print to stdout. The <code>!</code> indicates a macro.</p>
+
+        <p>Variables are immutable by default. Use <code>let mut x = 5;</code> for mutability.</p>
+
+        <p>The <code>?</code> operator propagates errors. It's equivalent to:</p>
+
+        <pre><code class="language-rust">match result {
+    Ok(val) =&gt; val,
+    Err(e) =&gt; return Err(e),
+}</code></pre>
+    </article>
+</body>
+</html>

@@ -19,9 +19,55 @@ High-performance HTML to Markdown converter with full GitHub Flavored Markdown s
 
 ## Installation
 
+### Node.js
+
 ```bash
 npm install @vakra-dev/supermarkdown
 ```
+
+### Rust
+
+```bash
+cargo add supermarkdown
+```
+
+### CLI
+
+Install the CLI binary via cargo:
+
+```bash
+cargo install supermarkdown
+```
+
+## Command Line Usage
+
+The CLI allows you to convert HTML files from the command line or via stdin:
+
+```bash
+# Convert a file
+supermarkdown page.html > page.md
+
+# Pipe HTML from curl
+curl -s https://example.com | supermarkdown
+
+# Exclude navigation and ads
+supermarkdown --exclude "nav,.ad,#sidebar" page.html
+
+# Use setext-style headings and referenced links
+supermarkdown --heading-style setext --link-style referenced page.html
+```
+
+### CLI Options
+
+| Option | Description |
+| ------ | ----------- |
+| `-h, --help` | Print help message |
+| `-v, --version` | Print version |
+| `--heading-style <STYLE>` | `atx` (default) or `setext` |
+| `--link-style <STYLE>` | `inline` (default) or `referenced` |
+| `--code-fence <CHAR>` | `` ` `` (default) or `~` |
+| `--bullet <CHAR>` | `-` (default), `*`, or `+` |
+| `--exclude <SELECTORS>` | CSS selectors to exclude (comma-separated) |
 
 ## Quick Start
 
@@ -38,6 +84,156 @@ console.log(markdown);
 // # Hello World
 //
 // This is a **test** with a [link](https://example.com).
+```
+
+## Common Use Cases
+
+### Cleaning Web Scrapes
+
+When scraping websites, HTML often contains navigation, ads, and other non-content elements. Use selectors to extract only what you need:
+
+```javascript
+import { convert } from "@vakra-dev/supermarkdown";
+
+// Raw HTML from a web scrape
+const scrapedHtml = await fetchPage("https://example.com/article");
+
+// Clean conversion - remove nav, ads, sidebars
+const markdown = convert(scrapedHtml, {
+  excludeSelectors: [
+    "nav",
+    "header",
+    "footer",
+    ".sidebar",
+    ".advertisement",
+    ".cookie-banner",
+    ".social-share",
+    ".comments",
+    "script",
+    "style",
+  ],
+});
+```
+
+### Preparing Content for LLMs
+
+When feeding web content to LLMs, you want clean, focused text without HTML artifacts:
+
+```javascript
+import { convert } from "@vakra-dev/supermarkdown";
+
+// Extract just the article content for RAG pipelines
+const markdown = convert(html, {
+  excludeSelectors: [
+    "nav",
+    "header",
+    "footer",
+    "aside",
+    ".related-posts",
+    ".author-bio",
+  ],
+  includeSelectors: ["article", ".post-content", "main"],
+});
+
+// Now feed to your LLM
+const response = await llm.chat({
+  messages: [
+    {
+      role: "user",
+      content: `Summarize this article:\n\n${markdown}`,
+    },
+  ],
+});
+```
+
+### Processing Blog Posts
+
+Convert blog HTML while preserving code blocks and formatting:
+
+```javascript
+import { convert } from "@vakra-dev/supermarkdown";
+
+const blogHtml = `
+<article>
+  <h1>Getting Started with Rust</h1>
+  <p>Rust is a systems programming language focused on safety.</p>
+  <pre><code class="language-rust">fn main() {
+    println!("Hello, world!");
+}</code></pre>
+  <p>The <code>println!</code> macro prints to stdout.</p>
+</article>
+`;
+
+const markdown = convert(blogHtml);
+// Output:
+// # Getting Started with Rust
+//
+// Rust is a systems programming language focused on safety.
+//
+// ```rust
+// fn main() {
+//     println!("Hello, world!");
+// }
+// ```
+//
+// The `println!` macro prints to stdout.
+```
+
+### Converting Documentation Pages
+
+Handle tables, definition lists, and nested structures common in docs:
+
+```javascript
+import { convert } from "@vakra-dev/supermarkdown";
+
+const docsHtml = `
+<h2>API Reference</h2>
+<table>
+  <tr><th>Method</th><th>Description</th></tr>
+  <tr><td><code>convert()</code></td><td>Sync conversion</td></tr>
+  <tr><td><code>convertAsync()</code></td><td>Async conversion</td></tr>
+</table>
+<dl>
+  <dt>headingStyle</dt>
+  <dd>ATX (#) or Setext (underlines)</dd>
+</dl>
+`;
+
+const markdown = convert(docsHtml);
+// Output:
+// ## API Reference
+//
+// | Method | Description |
+// | --- | --- |
+// | `convert()` | Sync conversion |
+// | `convertAsync()` | Async conversion |
+//
+// headingStyle
+// :   ATX (#) or Setext (underlines)
+```
+
+### Batch Processing
+
+Process multiple documents efficiently with async conversion:
+
+```javascript
+import { convertAsync } from "@vakra-dev/supermarkdown";
+
+const urls = [
+  "https://example.com/page1",
+  "https://example.com/page2",
+  "https://example.com/page3",
+];
+
+// Fetch and convert in parallel
+const markdownDocs = await Promise.all(
+  urls.map(async (url) => {
+    const html = await fetch(url).then((r) => r.text());
+    return convertAsync(html, {
+      excludeSelectors: ["nav", "footer"],
+    });
+  })
+);
 ```
 
 ## Usage
@@ -287,6 +483,178 @@ Some HTML features cannot be fully represented in Markdown:
 | iframe/video/audio      | Skipped (no standard Markdown equivalent)  |
 | CSS styling             | Ignored (except `text-align` for tables)   |
 | Empty elements          | Removed from output                        |
+
+## Edge Cases
+
+supermarkdown handles many edge cases gracefully:
+
+### Malformed HTML
+
+Invalid or malformed HTML is parsed via html5ever, which applies browser-like error recovery:
+
+```javascript
+// Missing closing tags, nested issues - all handled
+const html = "<p>Unclosed paragraph<div>Mixed<p>nesting</div>";
+const markdown = convert(html); // Produces sensible output
+```
+
+### Deeply Nested Lists
+
+Nested lists maintain proper indentation:
+
+```javascript
+const html = `
+<ul>
+  <li>Level 1
+    <ul>
+      <li>Level 2
+        <ul>
+          <li>Level 3</li>
+        </ul>
+      </li>
+    </ul>
+  </li>
+</ul>`;
+// Output:
+// - Level 1
+//   - Level 2
+//     - Level 3
+```
+
+### Code Blocks with Backticks
+
+When code contains backticks, the fence automatically uses more backticks:
+
+```javascript
+const html = "<pre><code>Use `backticks` for code</code></pre>";
+// Output uses 4 backticks as fence:
+// ````
+// Use `backticks` for code
+// ````
+```
+
+### Empty Elements
+
+Empty paragraphs, divs, and spans are stripped to avoid blank lines:
+
+```javascript
+const html = "<p></p><p>Real content</p><p>   </p>";
+const markdown = convert(html);
+// Output: "Real content" (empty paragraphs removed)
+```
+
+### Special Characters in URLs
+
+Spaces, parentheses, and other special characters in URLs are percent-encoded:
+
+```javascript
+const html = '<a href="https://example.com/file (1).pdf">Download</a>';
+// Output: [Download](https://example.com/file%20%281%29.pdf)
+```
+
+### Tables Without Headers
+
+Tables missing `<thead>` use the first row as header:
+
+```javascript
+const html = `
+<table>
+  <tr><td>A</td><td>B</td></tr>
+  <tr><td>1</td><td>2</td></tr>
+</table>`;
+// Output:
+// | A | B |
+// | --- | --- |
+// | 1 | 2 |
+```
+
+### Mixed Content in Lists
+
+List items with mixed block/inline content are handled:
+
+```javascript
+const html = `
+<ul>
+  <li>Simple item</li>
+  <li>
+    <p>Paragraph in list</p>
+    <pre><code>code block</code></pre>
+  </li>
+</ul>`;
+// Outputs proper markdown with preserved formatting
+```
+
+## Troubleshooting
+
+### Empty or Minimal Output
+
+**Problem:** `convert()` returns empty string or very little content.
+
+**Causes & Solutions:**
+
+1. **Content is in excluded elements** - Check if your content is inside `nav`, `header`, etc. that might match default patterns
+   ```javascript
+   // Try without selectors first
+   const markdown = convert(html);
+   ```
+
+2. **JavaScript-rendered content** - supermarkdown converts static HTML only. If the page uses client-side rendering, you need to render it first (e.g., with Puppeteer or Playwright)
+
+3. **Content in iframes** - iframe content is not extracted. Fetch iframe src separately if needed
+
+### Missing Code Block Language
+
+**Problem:** Code blocks don't have language annotation.
+
+**Solution:** supermarkdown looks for `language-*`, `lang-*`, or `highlight-*` class patterns. Ensure your HTML uses standard class naming:
+
+```html
+<!-- Detected -->
+<pre><code class="language-python">...</code></pre>
+<pre><code class="lang-js">...</code></pre>
+
+<!-- Not detected -->
+<pre><code class="python-code">...</code></pre>
+```
+
+### Tables Not Rendering Correctly
+
+**Problem:** Tables appear as plain text or are malformed.
+
+**Causes & Solutions:**
+
+1. **Missing table structure** - Ensure proper `<table>`, `<tr>`, `<td>` structure
+2. **Nested tables** - GFM doesn't support nested tables; inner tables are flattened
+3. **colspan/rowspan** - These are not supported in GFM; content goes in first cell
+
+### Links Missing or Broken
+
+**Problem:** Links don't appear or have wrong URLs.
+
+**Solutions:**
+
+1. **Relative URLs** - Use `baseUrl` option to resolve relative links:
+   ```javascript
+   convert(html, { baseUrl: "https://example.com" });
+   ```
+
+2. **Links in excluded elements** - Navigation links are often in `<nav>` which may be excluded
+
+### Performance Issues with Large Documents
+
+**Problem:** Conversion is slow for very large HTML files.
+
+**Solutions:**
+
+1. **Use async** - `convertAsync()` won't block the event loop
+2. **Pre-filter HTML** - Remove obvious non-content before conversion
+3. **Stream processing** - For very large docs, consider splitting into sections
+
+### Special Characters Appearing Wrong
+
+**Problem:** Characters like `<`, `>`, `&` appear as entities.
+
+**Solution:** This is usually correct behavior - these characters need escaping in markdown. If you're seeing `&amp;` where you expect `&`, the source HTML may have double-encoded entities.
 
 ## Rust Usage
 
