@@ -17,7 +17,6 @@
     "html",
     "markdown",
     "converter",
-    "turndown",
     "html-to-markdown",
     "gfm",
     "napi-rs",
