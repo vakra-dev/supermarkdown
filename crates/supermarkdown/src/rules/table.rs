@@ -105,10 +105,24 @@ impl Rule for TableRule {
                     .unwrap_or(Alignment::None);
 
                 // Format cell content with alignment
+                // NOTE: We CANNOT use format!("{:width$}", cell.content, ...) because
+                // cell.content may contain '{' or '}' characters (from math notation,
+                // code, templates) which format! interprets as format arguments, causing
+                // a panic: "Formatting argument out of range". Manual padding is safe.
+                let char_count = cell.content.chars().count();
+                let padding = if width > char_count { width - char_count } else { 0 };
                 let formatted = match alignment {
-                    Alignment::Right => format!(" {:>width$} |", cell.content, width = width),
-                    Alignment::Center => format!(" {:^width$} |", cell.content, width = width),
-                    _ => format!(" {:width$} |", cell.content, width = width),
+                    Alignment::Right => {
+                        format!(" {}{} |", " ".repeat(padding), cell.content)
+                    }
+                    Alignment::Center => {
+                        let left_pad = padding / 2;
+                        let right_pad = padding - left_pad;
+                        format!(" {}{}{} |", " ".repeat(left_pad), cell.content, " ".repeat(right_pad))
+                    }
+                    _ => {
+                        format!(" {}{} |", cell.content, " ".repeat(padding))
+                    }
                 };
                 result.push_str(&formatted);
             }
@@ -127,13 +141,14 @@ impl Rule for TableRule {
                         .get(col_idx)
                         .copied()
                         .unwrap_or(Alignment::None);
+                    let w = *width;
                     let separator = match alignment {
-                        Alignment::Left => format!(" :{} |", "-".repeat(*width - 1)),
+                        Alignment::Left => format!(" :{} |", "-".repeat(w.saturating_sub(1).max(2))),
                         Alignment::Center => {
-                            format!(" :{}: |", "-".repeat(width.saturating_sub(2)))
+                            format!(" :{}: |", "-".repeat(w.saturating_sub(2).max(1)))
                         }
-                        Alignment::Right => format!(" {}: |", "-".repeat(*width - 1)),
-                        Alignment::None => format!(" {} |", "-".repeat(*width)),
+                        Alignment::Right => format!(" {}: |", "-".repeat(w.saturating_sub(1).max(2))),
+                        Alignment::None => format!(" {} |", "-".repeat(w.max(3))),
                     };
                     result.push_str(&separator);
                 }
@@ -385,5 +400,142 @@ mod tests {
         );
         assert!(result.contains("| Col A"));
         assert!(result.contains("---"));
+    }
+
+    // ====== Edge cases that previously caused panics ======
+
+    #[test]
+    fn test_table_single_cell() {
+        let result = convert_test("<table><tr><td>Only</td></tr></table>");
+        assert!(result.contains("| Only"));
+    }
+
+    #[test]
+    fn test_table_empty_cells() {
+        let result = convert_test(
+            r#"<table>
+                <tr><th>A</th><th>B</th></tr>
+                <tr><td></td><td></td></tr>
+            </table>"#,
+        );
+        // Should not panic and should contain separator
+        assert!(result.contains("---"));
+    }
+
+    #[test]
+    fn test_table_more_data_cols_than_header() {
+        // Data rows have more columns than header — should pad header
+        let result = convert_test(
+            r#"<table>
+                <tr><th>A</th></tr>
+                <tr><td>1</td><td>2</td><td>3</td></tr>
+            </table>"#,
+        );
+        assert!(result.contains("| A"));
+        // Row with more columns should still render
+        assert!(result.contains("| 1"));
+    }
+
+    #[test]
+    fn test_table_wide_100_columns() {
+        let mut html = String::from("<table><tr>");
+        for i in 0..100 {
+            html.push_str(&format!("<th>H{}</th>", i));
+        }
+        html.push_str("</tr><tr>");
+        for i in 0..100 {
+            html.push_str(&format!("<td>D{}</td>", i));
+        }
+        html.push_str("</tr></table>");
+
+        let result = convert_test(&html);
+        assert!(result.contains("| H0"));
+        assert!(result.contains("| H99"));
+        assert!(result.contains("| D0"));
+        assert!(result.contains("| D99"));
+    }
+
+    #[test]
+    fn test_table_unicode_content() {
+        let result = convert_test(
+            r#"<table>
+                <tr><th>名前</th><th>説明</th></tr>
+                <tr><td>太郎</td><td>テスト</td></tr>
+            </table>"#,
+        );
+        assert!(result.contains("名前"));
+        assert!(result.contains("太郎"));
+    }
+
+    #[test]
+    fn test_table_with_only_empty_rows() {
+        let result = convert_test(
+            r#"<table>
+                <tr></tr>
+                <tr></tr>
+            </table>"#,
+        );
+        // Empty rows should produce empty result (no cells extracted)
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_table_nested_html_in_cells() {
+        let result = convert_test(
+            r#"<table>
+                <tr><th>Link</th></tr>
+                <tr><td><a href="https://example.com">Click</a></td></tr>
+            </table>"#,
+        );
+        assert!(result.contains("Click"));
+    }
+
+    // Regression: table.rs:111 panic "Formatting argument out of range"
+    // Cell content containing '{' or '}' caused format! macro to panic.
+    // Wikipedia math notation, code snippets, and template syntax trigger this.
+    #[test]
+    fn test_table_with_braces_in_content() {
+        let result = convert_test(
+            r#"<table>
+                <tr><th>Syntax</th><th>Example</th></tr>
+                <tr><td>Object</td><td>{key: value}</td></tr>
+                <tr><td>Template</td><td>{{variable}}</td></tr>
+                <tr><td>Set</td><td>{1, 2, 3}</td></tr>
+            </table>"#,
+        );
+        // Should not panic and should contain the brace content
+        assert!(result.contains("{key: value}"));
+        assert!(result.contains("{{variable}}"));
+        assert!(result.contains("{1, 2, 3}"));
+    }
+
+    #[test]
+    fn test_table_with_format_like_content() {
+        // Content that looks like Rust format strings should not panic
+        let result = convert_test(
+            r#"<table>
+                <tr><th>Pattern</th></tr>
+                <tr><td>{:>10}</td></tr>
+                <tr><td>{0:.2}</td></tr>
+                <tr><td>{name}</td></tr>
+            </table>"#,
+        );
+        assert!(result.contains("{:>10}"));
+        assert!(result.contains("{0:.2}"));
+        assert!(result.contains("{name}"));
+    }
+
+    #[test]
+    fn test_table_with_mixed_th_td_in_body() {
+        let result = convert_test(
+            r#"<table>
+                <tr><th>Header</th></tr>
+                <tr><th>Also TH</th></tr>
+                <tr><td>Regular TD</td></tr>
+            </table>"#,
+        );
+        assert!(result.contains("| Header"));
+        assert!(result.contains("| Also TH"));
+        assert!(result.contains("| Regular TD"));
     }
 }

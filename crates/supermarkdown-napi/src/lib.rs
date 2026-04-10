@@ -68,20 +68,49 @@ fn to_internal_options(opts: Option<ConvertOptions>) -> Options {
     options
 }
 
+/// Safely run conversion, catching any Rust panics.
+/// Returns the markdown string on success, or an empty string on panic
+/// (with the panic message logged to stderr).
+///
+/// This prevents Rust panics from crashing the Node.js process.
+fn safe_convert(html: &str, opts: &Options) -> String {
+    match std::panic::catch_unwind(std::panic::AssertUnwindSafe(|| {
+        supermarkdown::convert_with_options(html, opts)
+    })) {
+        Ok(result) => result,
+        Err(panic_info) => {
+            let msg = if let Some(s) = panic_info.downcast_ref::<String>() {
+                s.clone()
+            } else if let Some(s) = panic_info.downcast_ref::<&str>() {
+                s.to_string()
+            } else {
+                "Unknown panic during HTML-to-Markdown conversion".to_string()
+            };
+            eprintln!("[supermarkdown] PANIC caught (returned empty string): {}", msg);
+            String::new()
+        }
+    }
+}
+
 /// Convert HTML to Markdown synchronously.
+///
+/// Panics in the Rust conversion layer are caught internally and result
+/// in an empty string being returned (with a warning to stderr).
+/// This preserves the original `-> String` API contract.
 ///
 /// @param html - The HTML string to convert
 /// @param options - Optional conversion options
-/// @returns The converted Markdown string
+/// @returns The converted Markdown string (empty on internal error)
 #[napi]
 pub fn convert(html: String, options: Option<ConvertOptions>) -> String {
     let opts = to_internal_options(options);
-    supermarkdown::convert_with_options(&html, &opts)
+    safe_convert(&html, &opts)
 }
 
 /// Convert HTML to Markdown asynchronously.
 ///
 /// This is useful for large documents to avoid blocking the main thread.
+/// Panics are caught internally and result in an empty string.
 ///
 /// @param html - The HTML string to convert
 /// @param options - Optional conversion options
@@ -93,9 +122,9 @@ pub async fn convert_async(html: String, options: Option<ConvertOptions>) -> Res
     // Use tokio's spawn_blocking to run the CPU-intensive conversion
     // on a separate thread pool, avoiding blocking the Node.js event loop
     let result =
-        tokio::task::spawn_blocking(move || supermarkdown::convert_with_options(&html, &opts))
+        tokio::task::spawn_blocking(move || safe_convert(&html, &opts))
             .await
-            .map_err(|e| Error::from_reason(format!("Conversion failed: {}", e)))?;
+            .map_err(|e| Error::from_reason(format!("Conversion task failed: {}", e)))?;
 
     Ok(result)
 }
@@ -143,5 +172,18 @@ mod tests {
         let result = convert(html.to_string(), Some(options));
         assert!(!result.contains("Skip"));
         assert!(result.contains("Keep"));
+    }
+
+    #[test]
+    fn test_convert_empty_input() {
+        let result = convert(String::new(), None);
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_convert_returns_string_not_result() {
+        // Verify the API contract: convert() returns String directly, not Result
+        let result: String = convert("<p>test</p>".to_string(), None);
+        assert!(result.contains("test"));
     }
 }
