@@ -110,7 +110,7 @@ impl Rule for TableRule {
                 // code, templates) which format! interprets as format arguments, causing
                 // a panic: "Formatting argument out of range". Manual padding is safe.
                 let char_count = cell.content.chars().count();
-                let padding = if width > char_count { width - char_count } else { 0 };
+                let padding = width.saturating_sub(char_count);
                 let formatted = match alignment {
                     Alignment::Right => {
                         format!(" {}{} |", " ".repeat(padding), cell.content)
@@ -118,7 +118,12 @@ impl Rule for TableRule {
                     Alignment::Center => {
                         let left_pad = padding / 2;
                         let right_pad = padding - left_pad;
-                        format!(" {}{}{} |", " ".repeat(left_pad), cell.content, " ".repeat(right_pad))
+                        format!(
+                            " {}{}{} |",
+                            " ".repeat(left_pad),
+                            cell.content,
+                            " ".repeat(right_pad)
+                        )
                     }
                     _ => {
                         format!(" {}{} |", cell.content, " ".repeat(padding))
@@ -143,11 +148,15 @@ impl Rule for TableRule {
                         .unwrap_or(Alignment::None);
                     let w = *width;
                     let separator = match alignment {
-                        Alignment::Left => format!(" :{} |", "-".repeat(w.saturating_sub(1).max(2))),
+                        Alignment::Left => {
+                            format!(" :{} |", "-".repeat(w.saturating_sub(1).max(2)))
+                        }
                         Alignment::Center => {
                             format!(" :{}: |", "-".repeat(w.saturating_sub(2).max(1)))
                         }
-                        Alignment::Right => format!(" {}: |", "-".repeat(w.saturating_sub(1).max(2))),
+                        Alignment::Right => {
+                            format!(" {}: |", "-".repeat(w.saturating_sub(1).max(2)))
+                        }
                         Alignment::None => format!(" {} |", "-".repeat(w.max(3))),
                     };
                     result.push_str(&separator);

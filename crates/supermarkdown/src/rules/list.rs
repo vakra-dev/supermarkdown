@@ -76,7 +76,10 @@ impl Rule for ListItemRule {
                 .trim_start_matches("[ ]")
                 .trim_start_matches("[x]")
                 .trim_start();
-            (format!("{}{}", prefix, checkbox_marker), cleaned.to_string())
+            (
+                format!("{}{}", prefix, checkbox_marker),
+                cleaned.to_string(),
+            )
         } else {
             (prefix.clone(), content.to_string())
         };
@@ -94,8 +97,8 @@ impl Rule for ListItemRule {
 /// Matches: `<li><input type="checkbox" checked> ...` and similar patterns
 /// used by GitHub, Notion, and other tools that render task lists.
 fn detect_task_checkbox(li: &ElementRef) -> Option<bool> {
-    use scraper::Selector;
     use once_cell::sync::Lazy;
+    use scraper::Selector;
 
     static INPUT_SEL: Lazy<Selector> =
         Lazy::new(|| Selector::parse("input[type='checkbox']").unwrap());

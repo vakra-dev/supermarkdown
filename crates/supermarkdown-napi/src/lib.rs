@@ -86,7 +86,10 @@ fn safe_convert(html: &str, opts: &Options) -> String {
             } else {
                 "Unknown panic during HTML-to-Markdown conversion".to_string()
             };
-            eprintln!("[supermarkdown] PANIC caught (returned empty string): {}", msg);
+            eprintln!(
+                "[supermarkdown] PANIC caught (returned empty string): {}",
+                msg
+            );
             String::new()
         }
     }
@@ -121,10 +124,9 @@ pub async fn convert_async(html: String, options: Option<ConvertOptions>) -> Res
 
     // Use tokio's spawn_blocking to run the CPU-intensive conversion
     // on a separate thread pool, avoiding blocking the Node.js event loop
-    let result =
-        tokio::task::spawn_blocking(move || safe_convert(&html, &opts))
-            .await
-            .map_err(|e| Error::from_reason(format!("Conversion task failed: {}", e)))?;
+    let result = tokio::task::spawn_blocking(move || safe_convert(&html, &opts))
+        .await
+        .map_err(|e| Error::from_reason(format!("Conversion task failed: {}", e)))?;
 
     Ok(result)
 }

@@ -27,7 +27,9 @@ fn single_paragraph() {
 
 #[test]
 fn large_html_100k_paragraphs() {
-    let html: String = (0..1000).map(|i| format!("<p>Paragraph {}</p>", i)).collect();
+    let html: String = (0..1000)
+        .map(|i| format!("<p>Paragraph {}</p>", i))
+        .collect();
     let result = convert(&html);
     assert!(result.contains("Paragraph 0"));
     assert!(result.contains("Paragraph 999"));

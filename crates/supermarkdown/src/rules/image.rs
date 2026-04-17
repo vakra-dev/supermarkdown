@@ -104,7 +104,11 @@ mod tests {
             r#"<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..." alt="Icon">"#,
             &Options::default(),
         );
-        assert!(result.is_empty(), "base64 image should be filtered, got: {}", result);
+        assert!(
+            result.is_empty(),
+            "base64 image should be filtered, got: {}",
+            result
+        );
     }
 
     #[test]

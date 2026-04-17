@@ -61,7 +61,7 @@ mod tests {
         let element = ElementRef::wrap(element).unwrap();
         let metadata = MetadataMap::default();
 
-        HeadingRule.convert(element, &metadata, options, &|e, m, o| {
+        HeadingRule.convert(element, &metadata, options, &|e, _m, _o| {
             e.text().collect::<Vec<_>>().join("")
         })
     }
