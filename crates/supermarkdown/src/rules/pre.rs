@@ -185,10 +185,8 @@ fn collect_code_text(pre: &ElementRef) -> String {
         }
 
         match node.value() {
-            scraper::Node::Text(t) => {
-                if !skip {
-                    text.push_str(t);
-                }
+            scraper::Node::Text(t) if !skip => {
+                text.push_str(t);
             }
             scraper::Node::Element(_) => {
                 for child in node.children() {
