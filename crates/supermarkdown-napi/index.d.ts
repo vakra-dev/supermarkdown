@@ -23,15 +23,20 @@ export interface ConvertOptions {
 /**
  * Convert HTML to Markdown synchronously.
  *
+ * Panics in the Rust conversion layer are caught internally and result
+ * in an empty string being returned (with a warning to stderr).
+ * This preserves the original `-> String` API contract.
+ *
  * @param html - The HTML string to convert
  * @param options - Optional conversion options
- * @returns The converted Markdown string
+ * @returns The converted Markdown string (empty on internal error)
  */
 export declare function convert(html: string, options?: ConvertOptions | undefined | null): string
 /**
  * Convert HTML to Markdown asynchronously.
  *
  * This is useful for large documents to avoid blocking the main thread.
+ * Panics are caught internally and result in an empty string.
  *
  * @param html - The HTML string to convert
  * @param options - Optional conversion options

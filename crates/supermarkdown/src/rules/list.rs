@@ -65,11 +65,46 @@ impl Rule for ListItemRule {
             (format!("{} ", options.bullet_marker), 0)
         };
 
-        // Indent continuation lines
-        let indented = indent_continuation(content, prefix.len() + indent);
+        // Task list detection: if the <li> contains an <input type="checkbox">
+        // as a direct child, convert to GFM task list syntax: `- [ ]` or `- [x]`.
+        let task_checkbox = detect_task_checkbox(&element);
+        let (final_prefix, final_content) = if let Some(checked) = task_checkbox {
+            let checkbox_marker = if checked { "[x] " } else { "[ ] " };
+            // Strip the checkbox text from content (convert_children may have
+            // included the input's value or surrounding whitespace).
+            let cleaned = content
+                .trim_start_matches("[ ]")
+                .trim_start_matches("[x]")
+                .trim_start();
+            (format!("{}{}", prefix, checkbox_marker), cleaned.to_string())
+        } else {
+            (prefix.clone(), content.to_string())
+        };
 
-        format!("{}{}{}\n", " ".repeat(indent), prefix, indented)
+        // Indent continuation lines
+        let indented = indent_continuation(&final_content, final_prefix.len() + indent);
+
+        format!("{}{}{}\n", " ".repeat(indent), final_prefix, indented)
     }
+}
+
+/// Detect a task list checkbox inside an `<li>`. Returns `Some(true)` for
+/// checked, `Some(false)` for unchecked, `None` if no checkbox found.
+///
+/// Matches: `<li><input type="checkbox" checked> ...` and similar patterns
+/// used by GitHub, Notion, and other tools that render task lists.
+fn detect_task_checkbox(li: &ElementRef) -> Option<bool> {
+    use scraper::Selector;
+    use once_cell::sync::Lazy;
+
+    static INPUT_SEL: Lazy<Selector> =
+        Lazy::new(|| Selector::parse("input[type='checkbox']").unwrap());
+
+    li.select(&INPUT_SEL).next().map(|input| {
+        // The "checked" attribute can be `checked`, `checked=""`, or
+        // `checked="checked"`. Its mere presence means checked.
+        input.value().attr("checked").is_some()
+    })
 }
 
 /// Indent continuation lines of multi-line content.
@@ -299,5 +334,122 @@ mod tests {
         });
 
         assert!(result.contains("+ Item"));
+    }
+
+    #[test]
+    fn test_task_list_unchecked() {
+        let html = r#"<ul><li><input type="checkbox"> Buy milk</li></ul>"#;
+        let dom = Html::parse_document(html);
+        let options = Options::default();
+        let selectors = CompiledSelectors::new(&options);
+        let metadata = precompute_metadata(&dom, &selectors, &options);
+
+        let li = dom
+            .select(&scraper::Selector::parse("li").unwrap())
+            .next()
+            .unwrap();
+
+        let result = ListItemRule.convert(li, &metadata, &options, &|e, _, _| {
+            e.text().collect::<Vec<_>>().join("")
+        });
+
+        assert!(result.contains("- [ ] Buy milk"), "got: {}", result);
+    }
+
+    #[test]
+    fn test_task_list_checked() {
+        let html = r#"<ul><li><input type="checkbox" checked> Done task</li></ul>"#;
+        let dom = Html::parse_document(html);
+        let options = Options::default();
+        let selectors = CompiledSelectors::new(&options);
+        let metadata = precompute_metadata(&dom, &selectors, &options);
+
+        let li = dom
+            .select(&scraper::Selector::parse("li").unwrap())
+            .next()
+            .unwrap();
+
+        let result = ListItemRule.convert(li, &metadata, &options, &|e, _, _| {
+            e.text().collect::<Vec<_>>().join("")
+        });
+
+        assert!(result.contains("- [x] Done task"), "got: {}", result);
+    }
+
+    #[test]
+    fn test_task_list_checked_equals_checked() {
+        // GitHub renders checked="checked" not just bare `checked`
+        let html = r#"<ul><li><input type="checkbox" checked="checked"> Also done</li></ul>"#;
+        let dom = Html::parse_document(html);
+        let options = Options::default();
+        let selectors = CompiledSelectors::new(&options);
+        let metadata = precompute_metadata(&dom, &selectors, &options);
+
+        let li = dom
+            .select(&scraper::Selector::parse("li").unwrap())
+            .next()
+            .unwrap();
+
+        let result = ListItemRule.convert(li, &metadata, &options, &|e, _, _| {
+            e.text().collect::<Vec<_>>().join("")
+        });
+
+        assert!(result.contains("- [x] Also done"), "got: {}", result);
+    }
+
+    #[test]
+    fn test_regular_list_item_no_checkbox() {
+        // A regular <li> without a checkbox should NOT get task list syntax
+        let html = "<ul><li>Regular item</li></ul>";
+        let dom = Html::parse_document(html);
+        let options = Options::default();
+        let selectors = CompiledSelectors::new(&options);
+        let metadata = precompute_metadata(&dom, &selectors, &options);
+
+        let li = dom
+            .select(&scraper::Selector::parse("li").unwrap())
+            .next()
+            .unwrap();
+
+        let result = ListItemRule.convert(li, &metadata, &options, &|e, _, _| {
+            e.text().collect::<Vec<_>>().join("")
+        });
+
+        assert!(result.contains("- Regular item"), "got: {}", result);
+        assert!(!result.contains("[ ]"));
+        assert!(!result.contains("[x]"));
+    }
+
+    #[test]
+    fn test_detect_task_checkbox_none() {
+        let html = "<li>No checkbox</li>";
+        let dom = Html::parse_fragment(html);
+        let li = dom
+            .select(&scraper::Selector::parse("li").unwrap())
+            .next()
+            .unwrap();
+        assert_eq!(detect_task_checkbox(&li), None);
+    }
+
+    #[test]
+    fn test_detect_task_checkbox_unchecked() {
+        let html = r#"<li><input type="checkbox"> Task</li>"#;
+        let dom = Html::parse_fragment(html);
+        let li = dom
+            .select(&scraper::Selector::parse("li").unwrap())
+            .next()
+            .unwrap();
+        assert_eq!(detect_task_checkbox(&li), Some(false));
+    }
+
+    #[test]
+    fn test_detect_task_checkbox_checked() {
+        let html = r#"<li><input type="checkbox" checked> Task</li>"#;
+        let dom = Html::parse_fragment(html);
+        let li = dom
+            .select(&scraper::Selector::parse("li").unwrap())
+            .next()
+            .unwrap();
+        assert_eq!(detect_task_checkbox(&li), Some(true));
     }
 }

@@ -25,8 +25,9 @@ impl Rule for ImageRule {
         let alt = element.value().attr("alt").unwrap_or("");
         let title = element.value().attr("title");
 
-        // Skip images without src
-        if src.is_empty() {
+        // Skip images without src or with base64 data URIs (massive token waste
+        // in LLM pipelines — a single base64 image can be 100K+ tokens).
+        if src.is_empty() || src.starts_with("data:") {
             return String::new();
         }
 
@@ -95,5 +96,32 @@ mod tests {
         let options = Options::new().base_url(Some("https://example.com/".to_string()));
         let result = convert_test(r#"<img src="images/photo.jpg" alt="Photo">"#, &options);
         assert!(result.contains("https://example.com/images/photo.jpg"));
+    }
+
+    #[test]
+    fn test_base64_image_filtered() {
+        let result = convert_test(
+            r#"<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUg..." alt="Icon">"#,
+            &Options::default(),
+        );
+        assert!(result.is_empty(), "base64 image should be filtered, got: {}", result);
+    }
+
+    #[test]
+    fn test_data_svg_filtered() {
+        let result = convert_test(
+            r#"<img src="data:image/svg+xml;base64,PHN2Zy..." alt="SVG">"#,
+            &Options::default(),
+        );
+        assert!(result.is_empty());
+    }
+
+    #[test]
+    fn test_normal_image_not_filtered() {
+        let result = convert_test(
+            r#"<img src="https://example.com/photo.jpg" alt="Photo">"#,
+            &Options::default(),
+        );
+        assert_eq!(result, "![Photo](https://example.com/photo.jpg)");
     }
 }

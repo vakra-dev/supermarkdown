@@ -29,8 +29,22 @@ impl Rule for LinkRule {
         let href = element.value().attr("href").unwrap_or("");
         let title = element.value().attr("title");
 
-        let content = convert_children(element, metadata, options);
-        let content = WS_RE.replace_all(content.trim(), " ");
+        let raw_content = convert_children(element, metadata, options);
+        let raw_content = WS_RE.replace_all(raw_content.trim(), " ");
+
+        // Fallback for empty link text: use title, then aria-label.
+        // Common with SVG/icon-only links that produce empty [] without this.
+        let content = if raw_content.is_empty() {
+            if let Some(t) = element.value().attr("title") {
+                t.to_string()
+            } else if let Some(al) = element.value().attr("aria-label") {
+                al.to_string()
+            } else {
+                raw_content.to_string()
+            }
+        } else {
+            raw_content.to_string()
+        };
 
         // Handle empty or fragment-only href
         if href.is_empty() || href == "#" {
@@ -189,5 +203,46 @@ mod tests {
             &Options::default(),
         );
         assert_eq!(result, "[Installation](#user-guide-installation)");
+    }
+
+    #[test]
+    fn test_empty_link_text_uses_title() {
+        // SVG-only links produce empty text; should fall back to title.
+        // Title also appears as the markdown link title attribute.
+        let result = convert_test(
+            r#"<a href="https://example.com" title="Home"></a>"#,
+            &Options::default(),
+        );
+        assert_eq!(result, r#"[Home](https://example.com "Home")"#);
+    }
+
+    #[test]
+    fn test_empty_link_text_uses_aria_label() {
+        // Icon-only links with aria-label (no title attr)
+        let result = convert_test(
+            r#"<a href="https://example.com" aria-label="Settings"></a>"#,
+            &Options::default(),
+        );
+        assert_eq!(result, "[Settings](https://example.com)");
+    }
+
+    #[test]
+    fn test_empty_link_text_title_takes_precedence_over_aria_label() {
+        let result = convert_test(
+            r#"<a href="https://example.com" title="Title" aria-label="Aria"></a>"#,
+            &Options::default(),
+        );
+        assert_eq!(result, r#"[Title](https://example.com "Title")"#);
+    }
+
+    #[test]
+    fn test_non_empty_link_text_ignores_fallbacks() {
+        // When link has real text, title still appears as the markdown title
+        // attribute but the link text is the actual content, not the fallback.
+        let result = convert_test(
+            r#"<a href="https://example.com" title="Title" aria-label="Aria">Real Text</a>"#,
+            &Options::default(),
+        );
+        assert_eq!(result, r#"[Real Text](https://example.com "Title")"#);
     }
 }

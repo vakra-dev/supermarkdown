@@ -41,3 +41,6 @@ coverage/
 
 # Benchmark results
 criterion/
+
+# Local scripts (release tooling, not shipped)
+scripts/

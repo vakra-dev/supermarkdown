@@ -321,7 +321,7 @@ Converts HTML to Markdown asynchronously.
 | `<h1>` - `<h6>`            | `#` headings or setext underlines              |
 | `<p>`                      | Paragraphs with blank lines                    |
 | `<blockquote>`             | `>` quoted blocks (supports nesting)           |
-| `<ul>`, `<ol>`             | `-` or `1.` lists (supports `start` attribute) |
+| `<ul>`, `<ol>`             | `-` or `1.` lists (supports `start` attribute, task lists) |
 | `<pre><code>`              | Fenced code blocks with language detection     |
 | `<table>`                  | GFM tables with alignment and captions         |
 | `<hr>`                     | `---` horizontal rules                         |
@@ -333,8 +333,8 @@ Converts HTML to Markdown asynchronously.
 
 | HTML                       | Markdown                                |
 | -------------------------- | --------------------------------------- |
-| `<a>`                      | `[text](url)`, `[text][ref]`, or `<url>` (autolink) |
-| `<img>`                    | `![alt](src)`                           |
+| `<a>`                      | `[text](url)`, `[text][ref]`, or `<url>` (autolink). Falls back to `title`/`aria-label` for empty link text. |
+| `<img>`                    | `![alt](src)`. Base64 `data:` URIs are filtered out. |
 | `<strong>`, `<b>`          | `**bold**`                              |
 | `<em>`, `<i>`              | `*italic*`                              |
 | `<code>`                   | `` `code` `` (handles nested backticks) |
@@ -662,7 +662,7 @@ Add to your `Cargo.toml`:
 
 ```toml
 [dependencies]
-supermarkdown = "0.0.2"
+supermarkdown = "0.0.6"
 ```
 
 ```rust
