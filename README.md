@@ -8,7 +8,7 @@ High-performance HTML to Markdown converter with full GitHub Flavored Markdown s
 
 ## Features
 
-- **Fast** - Written in Rust with O(n) algorithms, significantly faster than JavaScript alternatives
+- **Fast** - Written in Rust with O(n) algorithms, [~5x faster than Turndown](bench/README.md) (67.8 MB/s throughput)
 - **Full GFM Support** - Tables with alignment, strikethrough, autolinks, fenced code blocks
 - **Accurate** - Handles malformed HTML gracefully via html5ever
 - **Configurable** - Multiple heading styles, link styles, custom selectors
@@ -681,7 +681,27 @@ let markdown = convert_with_options("<h1>Hello</h1>", &options);
 
 ## Performance
 
-supermarkdown is designed for high performance:
+supermarkdown is **~5x faster** than Turndown and other JavaScript HTML-to-Markdown converters.
+
+Benchmarked on 24 real web pages (10.8MB total), 100 iterations each:
+
+| Converter | Throughput | Total Time | vs supermarkdown |
+|-----------|-----------|------------|-----------------|
+| **supermarkdown** | **67.8 MB/s** | **159ms** | baseline |
+| Turndown | 13.8 MB/s | 785ms | 4.9x slower |
+| node-html-markdown | 0.3 MB/s | 33.6s | 211x slower |
+
+Per-page performance on a typical 238KB documentation page (Python regex docs):
+
+| Converter | Median | p95 | p99 |
+|-----------|--------|-----|-----|
+| **supermarkdown** | **4.56ms** | **5.18ms** | **6.02ms** |
+| Turndown | 26.25ms | 29.22ms | 50.74ms |
+| node-html-markdown | 47.99ms | 57.07ms | 73.20ms |
+
+Full benchmark methodology and per-fixture results: [`bench/README.md`](bench/README.md)
+
+### Why it's fast
 
 - **Single-pass parsing** - O(n) HTML traversal
 - **Pre-computed metadata** - List indices and CSS selectors computed in one pass

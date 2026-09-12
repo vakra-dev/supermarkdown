@@ -1,0 +1,14 @@
+{
+  "name": "supermarkdown-bench",
+  "private": true,
+  "description": "Benchmark suite comparing supermarkdown against JavaScript alternatives",
+  "scripts": {
+    "download": "node download-fixtures.js",
+    "compare": "node compare.js",
+    "run": "npm run download && npm run compare"
+  },
+  "dependencies": {
+    "node-html-markdown": "^2.0.0",
+    "turndown": "^7.2.0"
+  }
+}

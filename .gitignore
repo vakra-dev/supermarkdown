@@ -41,6 +41,9 @@ coverage/
 
 # Benchmark results
 criterion/
+bench/fixtures/*.html
+bench/results/
+bench/node_modules/
 
 # Local scripts (release tooling, not shipped)
 scripts/
